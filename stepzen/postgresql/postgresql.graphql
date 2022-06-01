@@ -93,7 +93,7 @@ type Query {
     @dbquery(
       type: "postgresql"
       query: """
-      select * from "public"."Comment" where "post_id" = $1
+      select * from "public"."Comment" where "post_id" = $1 order by "created_at" desc
       """
       configuration: "postgresql_config"
     )
@@ -116,6 +116,26 @@ type Query {
       query: """
       select * from "Post"
       order by "Post"."created_at" desc
+      """
+      configuration: "postgresql_config"
+    )
+  getPostListByTopic(topic: String!): [Post]
+    @dbquery(
+      type: "postgresql"
+      query: """
+      select *, "Post".id as id from "Post"
+      join "Subreddit" on "Subreddit"."id" = "Post"."subreddit_id"
+      where "Subreddit"."topic" = $1
+      order by "Post"."created_at" desc
+      """
+      configuration: "postgresql_config"
+    )
+  getPostListByPostId(post_id: ID!): Post
+    @dbquery(
+      type: "postgresql"
+      query: """
+      select * from "Post"
+      where "Post"."id" = $1
       """
       configuration: "postgresql_config"
     )
@@ -145,6 +165,16 @@ type Query {
 }
 
 type Mutation {
+  """
+  Mutation to insert comment
+  """
+  insertComment(post_id: ID!, username: String!, text: String!): Comment
+    @dbquery(
+      type: "postgresql"
+      table: "Comment"
+      dml: INSERT
+      configuration: "postgresql_config"
+    )
   """
   In this mutation example you can see how to do a mutation to insert data in the database.
   """
