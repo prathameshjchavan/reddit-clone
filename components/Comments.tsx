@@ -10,7 +10,7 @@ import { GET_POST_LIST_BY_POST_ID } from '../graphql/queries'
 import Avatar from './Avatar'
 
 type FormData = {
-  comment: String
+  comment: string
 }
 
 function Comments() {
@@ -26,14 +26,14 @@ function Comments() {
 
   const { register, handleSubmit, setValue } = useForm<FormData>()
 
-  const onSubmit: SubmitHandler<FormData> = async (data) => {
+  const onSubmit: SubmitHandler<FormData> = async (formData) => {
     const notification = toast.loading('Posting your comment...')
 
     await addComment({
       variables: {
         post_id: router.query.postId,
         username: session?.user?.name,
-        text: data.comment,
+        text: formData.comment,
       },
     })
 
